@@ -34,8 +34,8 @@ cd ai-context-system
 # Run setup (copies config, creates directories)
 ./setup.sh
 
-# Edit config.yaml with your real details
-# (or leave the Star Wars defaults to explore first)
+# Explore with the Star Wars demo, or clear it and start fresh:
+./setup.sh --clear
 
 # Start using with Claude Code (or Claude Desktop)
 # The system reads CLAUDE.md automatically
@@ -43,9 +43,9 @@ cd ai-context-system
 
 ### Three Steps to Personalise
 
-1. **Edit `config.yaml`** — Replace Darth Vader with yourself
-2. **Drop content into `Raw-Materials/`** — Meeting transcripts, docs, Slack exports
-3. **Run slash commands** — `/meeting`, `/slack`, `/doc` to process them
+1. **Clear the demo data** — Run `./setup.sh --clear` to remove all Star Wars content, then `./setup.sh` to create a fresh `config.yaml`
+2. **Edit `config.yaml`** — Replace the defaults with your real details
+3. **Drop content into `Raw-Materials/`** and **run slash commands** — `/meeting`, `/slack`, `/doc` to process them
 
 That's it. The system builds your personal knowledge graph from there.
 
@@ -156,6 +156,14 @@ The system ships with a complete demo persona to explore before adding your own 
 | Emperor Palpatine | CEO / Supreme Leader | Demanding, does not tolerate failure |
 
 Sample data includes meeting transcripts, decision records, Slack summaries, and memory files — all written in-universe with just enough corporate authenticity to be both useful and entertaining.
+
+When you're ready to use the system with your own data, run:
+
+```bash
+./setup.sh --clear
+```
+
+This removes all demo content (Memory, Curated-Context, Raw-Materials, Synced-Data, Archive, and `config.yaml`) while preserving the system files (Guidelines, Prompts, Scripts, slash commands, and Templates). You'll be prompted to confirm before anything is deleted.
 
 ---
 
