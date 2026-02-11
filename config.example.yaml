@@ -1,0 +1,77 @@
+# =============================================================================
+# AI Context System - Configuration
+# =============================================================================
+#
+# This file defines YOUR identity, company, team, and preferences.
+# All commands and memory operations read from this file — no hardcoded values.
+#
+# SETUP:
+#   1. Copy this file:  cp config.example.yaml config.yaml
+#   2. Replace the Star Wars demo values with your own
+#   3. config.yaml is gitignored — your personal data stays local
+#
+# The example below uses a Star Wars persona to demonstrate the system.
+# =============================================================================
+
+# --- Your Identity ---
+user:
+  name: "Darth Vader"
+  role: "Chief Operating Officer"
+  email: "vader@deathstar.empire.gov"
+  timezone: "Galactic/Coruscant"
+  location: "Death Star I, Outer Rim Territories"
+
+# --- Organisation ---
+company:
+  name: "Galactic Empire - Death Star Operations"
+  industry: "Planetary Defence & Governance"
+  jira_url: "https://empire.atlassian.net"
+  jira_project_key: "DS"
+  confluence_url: "https://empire.atlassian.net/wiki"
+  calendar_email: "vader@deathstar.empire.gov"
+
+# --- Your Team ---
+team:
+  name: "Death Star Operations"
+  members:
+    - name: "Grand Moff Tarkin"
+      role: "Station Commander / CEO"
+      relationship: "Peer — mutual respect, occasional friction over station priorities"
+    - name: "Admiral Piett"
+      role: "VP Naval Operations"
+      relationship: "Direct report — competent, nervous, eager to please"
+    - name: "General Veers"
+      role: "Director of Ground Forces"
+      relationship: "Direct report — reliable, straight-talking, delivers results"
+    - name: "Moff Jerjerrod"
+      role: "Engineering Lead (Death Star II)"
+      relationship: "Project lead — perpetually behind schedule, needs motivation"
+    - name: "Captain Needa"
+      role: "Senior Fleet Captain"
+      relationship: "Direct report — well-meaning, apologetic about failures"
+
+# --- Key Stakeholders (outside your direct team) ---
+stakeholders:
+  - name: "Emperor Palpatine"
+    role: "CEO / Supreme Leader"
+    relationship: "Boss — demanding, expects results, does not tolerate failure"
+  - name: "Colonel Yularen"
+    role: "Head of Imperial Security Bureau"
+    relationship: "Cross-functional partner — intelligence and security coordination"
+  - name: "Dr. Bevel Lemelisk"
+    role: "Chief Architect"
+    relationship: "Technical expert — designed the thermal exhaust port, defensive about it"
+
+# --- Communication & Writing Style ---
+communication_style:
+  spelling: "british"              # "british" or "american"
+  formality: "imperial"            # "casual", "professional", or "imperial"
+  tone_notes: >
+    Authoritative but measured. Prefers concise, direct communication.
+    Does not suffer fools. Occasional dry menace when deadlines are missed.
+
+# --- Obsidian Integration (optional) ---
+obsidian:
+  vault_name: "AI-Context"         # Name of your Obsidian vault
+  daily_notes_format: "YYYY-MM-DD" # Date format for daily notes
+  templates_dir: "Curated-Context/Obsidian-Specific-Dirs/Templates"

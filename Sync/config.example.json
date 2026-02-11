@@ -1,0 +1,12 @@
+{
+  "jira": {
+    "root_issues": [
+      "DS-001",
+      "IMP-017"
+    ],
+    "filter_prefix": "DS-",
+    "description": "Death Star Operations team goals only",
+    "last_synced": "",
+    "total_issues": 0
+  }
+}

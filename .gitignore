@@ -44,8 +44,10 @@ npm-debug.log*
 *.log
 sync_jira.log
 
-# --- Secrets ---
+# --- Secrets & Local Config ---
 .env
 .env.*
 !.env.example
 credentials.json
+.calendar-token.json
+Sync/config.json
