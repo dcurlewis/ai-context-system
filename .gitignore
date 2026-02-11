@@ -1,0 +1,51 @@
+# =============================================================================
+# AI Context System - .gitignore
+# =============================================================================
+
+# --- User Configuration (contains personal data) ---
+config.yaml
+
+# --- Content Directories (personal data, not shared) ---
+# Uncomment these if you want to track your content in a PRIVATE repo.
+# NEVER commit these to a public repo.
+# Archive/
+# Raw-Materials/
+# Synced-Data/
+
+# --- System / Editor ---
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+venv/
+.venv/
+env/
+.env
+
+# --- Node (if applicable) ---
+node_modules/
+npm-debug.log*
+
+# --- Logs ---
+*.log
+sync_jira.log
+
+# --- Secrets ---
+.env
+.env.*
+!.env.example
+credentials.json
