@@ -116,6 +116,27 @@ Create/update today's daily journal: `Curated-Context/Daily-Journals/YYYY-MM-DD.
 
 ```
 
+## De-duplicating Notes and Priorities
+
+The previous day's journal (step 5) serves as a baseline to avoid repeating the same items daily. For each item you'd include in the briefing (priorities, pending decisions, people to check in with), only include it if at least one of:
+
+- It is **new today** (not present in the previous journal)
+- It is **specifically actionable today** (e.g. a meeting, deadline, or departure happening today)
+- Its **status has materially changed** since the previous journal (e.g. 'proposal submitted' → 'proposal approved')
+- It is the **first or last day** of a relevant period (e.g. first day of someone's leave, last day of a placement)
+
+**Do not repeat** items that appeared in the previous journal unless they meet one of the above criteria. Ongoing situations (e.g. 'Person X still on leave', 'budget approval still pending') should not be restated daily; they were noted when they first became relevant.
+
+Examples of good notes:
+- 'Placement ends today (Friday)' ← actionable today
+- 'Budget approved yesterday; migration can proceed' ← status changed
+- 'Workshop with stakeholders scheduled this afternoon' ← happening today
+
+Examples of notes to omit (if already in previous journal):
+- 'Person X on leave for 4 weeks' ← already noted, no change
+- 'Promotion application rejected; retention risk' ← already noted, no new development
+- 'Intern finishing this week' ← already noted earlier this week
+
 ## Notes
 - The morning briefing is the system's flagship command — it should feel like having a chief of staff
 - Prioritise actionable intelligence over comprehensiveness
