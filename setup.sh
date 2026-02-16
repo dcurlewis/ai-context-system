@@ -189,10 +189,25 @@ clear_data() {
     echo ""
 }
 
-# --- Handle --clear flag ---
-if [ "${1:-}" = "--clear" ]; then
-    clear_data
-    exit 0
+# --- Handle arguments ---
+if [ $# -gt 0 ]; then
+    case "$1" in
+        --clear)
+            clear_data
+            exit 0
+            ;;
+        *)
+            echo ""
+            echo -e "${BOLD}AI Context System — Setup${RESET}"
+            echo ""
+            echo -e "Usage: ${CYAN}./setup.sh${RESET}              Run setup (safe to re-run)"
+            echo -e "       ${CYAN}./setup.sh --clear${RESET}      Remove all demo/user data and start fresh"
+            echo ""
+            echo -e "${RED}Unknown option:${RESET} $1"
+            echo ""
+            exit 1
+            ;;
+    esac
 fi
 
 # =============================================================================
