@@ -203,16 +203,32 @@ Use for strategic discussions, complex multi-topic meetings, or meetings with si
 
 ---
 
-## Dynamics & Observations
+## Meeting Analysis
 
-[Relationship observations, political dynamics, subtext worth noting]
+[Include for all Full-template meetings. See Meeting Analysis Sections below.]
+```
 
 ---
 
-## Personal Communication Feedback
+## Meeting Analysis Sections
 
-[Include only if meeting was over 20 minutes AND the user's communication style had observable impact. Keep to 2-3 specific observations, not exhaustive analysis. Omit for routine check-ins.]
-```
+**Include a `## Meeting Analysis` section for any meeting with an estimated duration of ~10 minutes or longer**, regardless of which template is used. Only omit it for very short meetings (under ~10 minutes).
+
+The depth of the analysis should scale with the template:
+
+### For Minimal and Standard templates
+
+Include under `## Meeting Analysis`:
+
+- **Insights**: 1-2 brief observations about patterns, implications, or connections to broader context. Grounded in facts, not speculation.
+- **Personal Communication Feedback** (optional subsection): Include if the user's communication style had any observable impact worth noting. Keep to 1-2 specific observations. Omit if nothing notable.
+
+### For Full template
+
+Include under `## Meeting Analysis`:
+
+- **Insights**: 1-2 professional observations about patterns or implications, grounded in facts. Not speculation or extrapolation.
+- **Personal Communication Feedback**: 2-3 specific observations about the user's communication style and its impact. Keep factual and actionable.
 
 ---
 
@@ -222,10 +238,11 @@ Apply Obsidian wikilinks to the output file per `Guidelines/wikilink-guidelines.
 
 ## What NOT to Include
 
+- **Awareness Items as a separate section**: Integrate into Key Topics or omit
 - **Redundant facts**: Don't repeat the same information across multiple sections
 - **Exhaustive quotes**: 1-3 quotes maximum, choose the most telling
 - **Forced context connections**: Only cross-reference if genuinely relevant
-- **Personal Communication Feedback for short meetings**: Reserve for substantive discussions
+- **Meeting Analysis for very short meetings**: Only omit for meetings under ~10 minutes
 - **Speculation or extrapolation**: Stick to what was actually discussed
 
 ---
