@@ -125,12 +125,13 @@ jira_goal: {PROJ-XX if applicable}
 ### Stub Creation Rules
 
 1. **Create stubs only for entities that are linked** (i.e., appear in the Canonical Names list or are new linkable entities).
-2. **People stubs must always use full name (first and last).** If the last name is not known or not confidently known from source material, **do not create the stub**. Instead, ask the user for the full name. Use only a first-name alias link in the output file until the stub is created.
-3. **Use your organisation's directory as the primary data source for people stubs** where available. Query for official role, email, location, start date, and org hierarchy. Fall back to asking the user if the person cannot be found.
-4. **Keep stubs minimal.** The value is in backlinks, not in duplicating information. 1-2 lines of context maximum at creation time.
-5. **Don't overwrite existing stubs.** If a file already exists at the target path, leave it. Stubs accumulate context over time through manual editing; commands should not reset that.
-6. **Use YAML frontmatter** for structured metadata (aliases, role, team). This enables Obsidian Dataview queries later if desired.
-7. **Add new entities to the Canonical Names list** below when creating their stub, to prevent future inconsistencies.
+2. **Name resolution order — ALWAYS resolve names using the Canonical Names list first.** When a first name or alias appears in source material: (a) Check the Canonical Names list below for a match. If a canonical entry matches, use that entry's full name as the link target. (b) If no canonical match exists, **do not invent or look up a full name**. Prompt the user: 'I'd like to create a link/stub for [first name] ([context, e.g. "mentioned in discussion about training platform"]) but they're not in the canonical list. Can you confirm who this is?' Use only a first-name link (e.g. `[[Vader]]`) in the output file until confirmed.
+3. **People stubs must always use full name (first and last).** If the last name is not known or not confidently known from source material, **do not create the stub**. Wait for the user's confirmation per rule 2. Use only a first-name alias link in the output file until the stub is created.
+4. **Use your organisation's directory as the primary data source for people stubs** where available. Query for official role, email, location, start date, and org hierarchy. Fall back to asking the user if the person cannot be found.
+5. **Keep stubs minimal.** The value is in backlinks, not in duplicating information. 1-2 lines of context maximum at creation time.
+6. **Don't overwrite existing stubs.** If a file already exists at the target path, leave it. Stubs accumulate context over time through manual editing; commands should not reset that.
+7. **Use YAML frontmatter** for structured metadata (aliases, role, team). This enables Obsidian Dataview queries later if desired.
+8. **Add new entities to the Canonical Names list** below when creating their stub, to prevent future inconsistencies.
 
 ## Canonical Names Reference
 
