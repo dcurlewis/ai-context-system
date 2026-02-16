@@ -75,11 +75,11 @@ Use for brief check-ins, status updates, routine 1-on-1s with no significant dec
 
 ---
 
-## Decisions
+## Explicit Decisions
 
 - [Decision 1 — if any]
 
-## Action Items
+## My Action Items
 
 - [Item 1 — if any]
 
@@ -120,13 +120,13 @@ Use for typical working meetings with some substance.
 
 ---
 
-## Decisions
+## Explicit Decisions
 
 - [Decision with decision-maker noted]
 
 ---
 
-## Action Items
+## My Action Items
 
 - [Item with deadline if mentioned]
 
@@ -175,13 +175,13 @@ Use for strategic discussions, complex multi-topic meetings, or meetings with si
 
 ---
 
-## Decisions
+## Explicit Decisions
 
 - [Decision with decision-maker and rationale if stated]
 
 ---
 
-## Action Items
+## My Action Items
 
 - [Item with deadline if mentioned]
 
