@@ -1,145 +1,139 @@
-# Meeting Communication Analysis
+---
+description: Meta-analysis of past 7 days' meetings with aggregated communication feedback
+---
 
-Deep analysis of communication patterns, dynamics, and effectiveness from a meeting transcript. Goes beyond the standard `/meeting` processing to focus on interpersonal dynamics and the user's own performance.
+Perform a meta-analysis of meetings from the past 7 days, covering statistics and aggregated personal communication feedback.
 
-## Instructions
+## Step 1: Gather Meeting Data
 
-1. Read `config.yaml` for user identity, role, team, and communication style
-2. Read `Memory/memory-relationships.md` for existing relationship context
-3. Read `Memory/memory-team-dynamics.md` for existing team dynamics
-4. Accept a meeting transcript (file path or reference to an already-processed meeting)
-5. If referencing a processed meeting, also read the insight file from `Curated-Context/Project-Insights/`
-6. Perform deep communication analysis
+1. Calculate the date range: **7 calendar days ending yesterday** (inclusive). This is a strict calendar-based lookback, NOT the current work week. Since this command typically runs early on a Friday morning before any meetings have occurred, the range covers the previous Friday through Thursday. For example, if today is Friday 2026-02-13, the range is 2026-02-06 (Friday) through 2026-02-12 (Thursday).
+2. Scan both meeting directories for files with YYYYMMDD prefixes falling within that range:
+   - `Curated-Context/Meeting-Insights/*.md`
+   - `Curated-Context/Meeting-Insights/One-on-ones/*.md`
+3. Read all matching meeting summaries
 
-## This is Different From /meeting
+**Important**: Do NOT look at today's calendar or note the absence of meetings today. This analysis reviews meeting *summaries already written* from the past 7 days, not today's upcoming schedule.
 
-`/meeting` processes a transcript into structured insights for knowledge capture.
+## Step 2: Extract Meeting Metadata
 
-`/meeting-analysis` goes deeper on the **human side** — communication patterns, power dynamics, the user's effectiveness, and coaching feedback. Think of it as having a trusted advisor watch the meeting and give you notes.
+For each meeting, extract:
+- **Date** (from filename YYYYMMDD prefix)
+- **Title** (from filename or H1 heading)
+- **Duration** (from `Duration:` field, estimate if not present)
+- **Participant count** (from `Participants:` field)
+- **Meeting type** (classify based on participant count and context):
+  - **One-on-one**: 2 participants
+  - **Small group**: 3-5 participants
+  - **Large group**: 6+ participants
+  - **Vendor/External**: Participants from outside the organisation
+  - **Calibration/Review**: Process-oriented meetings (role change, delivery review, etc.)
+  - **Workshop/Planning**: Collaborative working sessions
+  - **All Hands/Show & Tell**: Broadcast-style meetings
 
-## Analysis Framework
+## Step 3: Generate Statistics Report
 
-### 1. Conversation Architecture
-- **Who drove the agenda?** Who had the power in the room?
-- **Talk-time distribution**: Who spoke most? Who was barely heard?
-- **Turn-taking patterns**: Who interrupts? Who gets interrupted? Who defers?
-- **Question dynamics**: Who asked questions? Were they genuine or performative?
-- **Topic transitions**: Who changed the subject? Were any topics cut short?
+Present the following statistics:
 
-### 2. Power & Influence Dynamics
-- **Formal vs. informal power**: Did the most senior person dominate, or did influence flow differently?
-- **Coalition signals**: Who agreed with whom? Are there forming alliances?
-- **Deference patterns**: Who looked to whom before speaking? Who sought permission?
-- **Challenge dynamics**: Was authority challenged? How was it handled?
+### Meeting Volume
+- Total meeting count for the 7-day period
+- Meetings per day (breakdown and average)
+- Comparison to typical week if pattern is observable
 
-### 3. Emotional & Political Subtext
-- **Tension points**: Where did the conversation get uncomfortable?
-- **Unspoken concerns**: What was NOT said that probably should have been?
-- **Defensive reactions**: Who got defensive and about what?
-- **Enthusiasm vs. compliance**: Who was genuinely bought in vs. going along?
-- **Territory marking**: Was anyone protecting their domain?
+### Meeting Type Distribution
+| Type | Count | % of Total |
+|------|-------|------------|
+| One-on-one | X | Y% |
+| Small group | X | Y% |
+| ... | ... | ... |
 
-### 4. Individual Communication Profiles
+### Time Investment
+- Total estimated meeting time (sum of durations)
+- Average meeting duration
+- Average time per day in meetings
+- Longest meeting of the week
+- Shortest meeting of the week
 
-For each key participant:
+### Other Notable Patterns
+- Most frequent meeting participants
+- Peak meeting days
+- Any notable scheduling patterns
 
-```markdown
-#### [[Person Name]]
-**Communication style in this meeting**: {Assertive/Collaborative/Passive/Aggressive/Analytical}
-**Key contributions**: {What they brought to the discussion}
-**Body language signals**: {If visible from transcript — hedging language, qualifiers, etc.}
-**Alignment**: {Aligned with / Opposed to / Neutral on key topics}
-**Notable moments**: {Specific quotes or interactions worth noting}
+## Step 4: Aggregate Personal Communication Feedback
+
+Search each meeting summary for `## Meeting Analysis` section (and any `Personal Communication Feedback` subsections within).
+
+### Collection
+- List which meetings included personal communication feedback
+- Note which meetings did NOT include feedback (typically shorter meetings under 10 minutes)
+
+### Synthesis Across Meetings
+
+Analyse the collected feedback sections and synthesise across these dimensions:
+
+#### Participation Patterns
+- How does participation vary by meeting type?
+- Any patterns in speaking time or contribution level?
+
+#### Communication Strengths (recurring positives)
+- What communication behaviours appear consistently effective?
+- Which patterns are noted as strengths multiple times?
+
+#### Communication Patterns to Watch
+- Any behaviours noted as improvement areas more than once?
+- Patterns that may be limiting effectiveness?
+
+#### Language and Clarity
+- Hedging language patterns
+- Directness vs qualification
+- Informal vs formal register choices
+
+#### Listening and Engagement
+- Evidence of active listening across meetings
+- Building on others' ideas vs introducing new topics
+
+#### Strategic Positioning
+- How are you positioning in different meeting contexts?
+- Authority signalling patterns
+
+### Aggregated Recommendations
+
+Based on patterns across all meetings with feedback:
+
+1. **Continue doing**: Behaviours to maintain (appeared effective in multiple contexts)
+2. **Experiment with**: Adjustments that might improve impact
+3. **Be mindful of**: Patterns that could become problematic if unchecked
+
+## Output Format
+
+Structure the report as:
+
 ```
+# Meeting Meta-Analysis: [Date Range]
 
-### 5. The User's Performance (The Most Important Section)
+## Summary
+[2-3 sentences: total meetings, key finding on time investment, key communication insight]
 
-Provide honest, constructive feedback on how the user came across:
+## Meeting Statistics
+[Tables and metrics from Step 3]
 
-```markdown
-## Your Performance
+## Communication Feedback Analysis
 
-### What You Did Well
-- {Specific example with evidence from the transcript}
-- {Specific example}
+### Meetings Reviewed for Communication Feedback
+[List of meetings with feedback sections]
 
-### What Could Improve
-- {Specific observation} — *Suggestion: {How to handle it differently next time}*
-- {Specific observation} — *Suggestion: {Alternative approach}*
+### Synthesised Observations
+[Analysis from Step 4]
 
-### Your Influence in the Room
-{Assessment of how the user was perceived, how much influence they wielded, and whether they achieved their likely goals}
+### Key Takeaways
+[Aggregated recommendations]
 
-### Communication Patterns Observed
-- **Your talk-time**: {Approximate share}
-- **Your style**: {Assertive/Facilitative/Directive/etc.}
-- **Questions asked**: {Types — open, closed, leading, genuine}
-- **Listening signals**: {Did you build on others' points? Acknowledge before redirecting?}
-
-### Specific Coaching Notes
-1. {Actionable coaching point with example from the transcript}
-2. {Actionable coaching point}
+---
+*Analysis generated: [Date]*
 ```
-
-### 6. Relationship Implications
-
-Based on this meeting, what changed in relationships?
-- **Strengthened**: {Which relationships and why}
-- **Strained**: {Which relationships and why}
-- **New dynamics**: {Anything that shifted}
-- **Action needed**: {Relationship maintenance tasks}
-
-## Output
-
-### Save Location
-`Curated-Context/Project-Insights/YYYYMMDD-Meeting-Analysis-{Meeting-Name}.md`
-
-### Full Template
-
-```markdown
-# Meeting Communication Analysis — {Meeting Name}
-
-**Date**: {Date}
-**Analysed for**: {User name from config.yaml}
-**Attendees**: [[Person 1]], [[Person 2]], [[Person 3]]
-
-## Executive Summary
-{3-4 sentence summary focusing on the dynamics, not the content}
-
-## Conversation Architecture
-{Talk-time, turn-taking, question dynamics}
-
-## Power & Influence Dynamics
-{Who had power, how it flowed, coalition signals}
-
-## Emotional & Political Subtext
-{Tension, unspoken concerns, territory}
-
-## Individual Profiles
-{Per-person analysis}
-
-## Your Performance
-{Strengths, improvements, coaching notes}
-
-## Relationship Implications
-{What changed, what to do about it}
-
-## Key Takeaways
-1. {Most important insight about the dynamics}
-2. {Most actionable coaching point for the user}
-3. {Most significant relationship implication}
-```
-
-## Memory Updates
-
-After analysis:
-- Update `Memory/memory-team-dynamics.md` with new dynamic observations
-- Update `Memory/memory-relationships.md` with relationship changes
-- Update relevant `Curated-Context/People/` profiles
 
 ## Notes
-- This command requires a high degree of candour — the user wants honest feedback, not flattery
-- Base all observations on evidence from the transcript — cite specific moments
-- The coaching should be constructive and specific, not generic advice
-- Acknowledge when you're inferring vs. observing — "From the hedging language used, it seems like..."
-- Apply the user's communication style from `config.yaml` to the output, but not to the feedback itself (feedback should be direct regardless of style preference)
+
+- If fewer than 3 meetings have Meeting Analysis sections, note this limitation and provide what analysis is possible
+- Focus on patterns that appear across multiple meetings rather than one-off observations
+- Be specific with examples but avoid excessive quoting
+- Maintain objective tone; present observations rather than judgements
