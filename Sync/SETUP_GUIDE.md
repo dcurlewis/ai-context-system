@@ -1,16 +1,17 @@
-# Jira Sync Setup Guide
+# Data Sync Setup Guide
 
 ## Overview
 
-The Jira sync script fetches issue hierarchies from your Jira instance and stores them locally as JSON files. This data is then available to Claude for context during your sessions.
+The sync scripts fetch data from external services (Jira, GitHub, Slack, Calendar) and store it locally as JSON files. This data is then available to Claude for context during your sessions.
 
-## What the Script Supports
+## What the Scripts Support
 
-1. **Multiple root issues** - Track issues from multiple parent goals
-2. **Prefix filtering** - Only sync children matching specific key patterns (e.g., "TEAM-")
-3. **Issue type filtering** - Automatically excludes "Effort Estimate" issues (planning artifacts, not real work)
-4. **Flexible configuration** - Backward compatible with single-root setups
-5. **New Jira API** - Uses `/rest/api/3/search/jql` with token-based pagination
+1. **Jira sync** — Issue hierarchies with prefix filtering, multiple root issues, and ADF-to-Markdown conversion
+2. **GitHub sync** — Merged PRs by team members with Jira key cross-referencing
+3. **Slack sync** — Channel messages with thread replies, user name resolution, and incremental sync
+4. **Calendar sync** — Today's calendar events via macOS EventKit
+5. **Daily orchestration** — All syncs run together with independent failure handling
+6. **Automated pipeline** — Cron-based daily data ingress, morning journal generation, and nightly memory updates
 
 ## Setup Steps
 
@@ -44,6 +45,14 @@ Your `.env` file should contain:
 JIRA_EMAIL=your.email@company.com
 JIRA_API_TOKEN=your-api-token-here
 JIRA_BASE_URL=https://your-company.atlassian.net
+
+# GitHub Configuration
+GITHUB_TOKEN=ghp_xxxxxxxxxxxx
+
+# Slack Configuration
+SLACK_SESSION_TOKEN=xoxc-your-session-token-here
+SLACK_COOKIE_D=your-d-cookie-value-here
+SLACK_WORKSPACE_URL=https://your-workspace.slack.com
 ```
 
 **Get your Jira API token:**
@@ -51,6 +60,24 @@ JIRA_BASE_URL=https://your-company.atlassian.net
 2. Click "Create API token"
 3. Name it "AI-Context Sync"
 4. Copy and paste into `.env`
+
+**Get your Slack session token and cookie:**
+1. Open Slack in your browser and press F12 (DevTools)
+2. Go to Console and run:
+   ```javascript
+   JSON.parse(localStorage.getItem('localConfig_v2')).teams[
+       Object.keys(JSON.parse(localStorage.getItem('localConfig_v2')).teams)[0]
+   ].token
+   ```
+3. Copy the `xoxc-...` token into `SLACK_SESSION_TOKEN`
+4. For the `d` cookie, run in Console:
+   ```javascript
+   document.cookie.split('; ').find(c => c.startsWith('d=')).slice(2)
+   ```
+   Or: DevTools > Application > Cookies > `https://app.slack.com` > find the `d` cookie
+5. Copy into `SLACK_COOKIE_D`
+
+Note: Session tokens expire periodically (typically every few weeks). When they do, the Slack sync will report an `expired_token` error and you'll need to re-extract from the browser.
 
 ### 3. Configure root issues
 
@@ -121,40 +148,49 @@ python sync_jira.py --root PROJ-1 --root PROJ-2 --filter TEAM-
 
 ## Automation (Optional)
 
-A wrapper script `run_sync.sh` is provided that adds timestamps to logs.
+The system includes a full automation pipeline with daily data ingress, morning journal generation, and nightly memory updates.
 
-### Set up weekly sync (every Monday at 8am)
+### Install the cron schedule
+
+A reference crontab is provided at `Scripts/crontab.txt`. Edit the paths to match your clone location, then install:
 
 ```bash
+# Review and edit paths first
+vi Scripts/crontab.txt
+
+# Install (replaces existing crontab)
+crontab Scripts/crontab.txt
+
+# Or merge into existing crontab
 crontab -e
+# ... paste the entries from Scripts/crontab.txt
 ```
 
-Add this line:
-```bash
-0 8 * * 1 /path/to/your/ai-context-system/Sync/run_sync.sh
-```
+### Cron schedule
 
-### Alternative schedules
+| Schedule | Script | Purpose |
+|----------|--------|---------|
+| Weekdays 7:00am | `Sync/run_daily.sh` | Data ingress: Jira, GitHub, Slack, Calendar |
+| Weekdays 7:30am | `Scripts/run_morning.sh` | Morning journal via Claude CLI |
+| Monday 7:15am | `Scripts/News/run_fetch_news.sh` | RSS news fetch |
+| Weekdays 11:00pm | `Scripts/run_memory_update.sh` | Full memory update cycle via Claude CLI |
 
-```bash
-# Daily at 8am
-0 8 * * * /path/to/your/ai-context-system/Sync/run_sync.sh
-
-# Weekdays at 8am
-0 8 * * 1-5 /path/to/your/ai-context-system/Sync/run_sync.sh
-
-# Monday and Thursday at 9am
-0 9 * * 1,4 /path/to/your/ai-context-system/Sync/run_sync.sh
-```
+`run_daily.sh` runs all four syncs sequentially with independent failure handling (one failure does not block others). `run_memory_update.sh` orchestrates the full 5-phase memory update cycle with skip logic (skips if no new content) and archive pruning. Both Claude CLI scripts use `claude -p` in non-interactive mode with `--permission-mode auto-accept`.
 
 ### View logs
 
 ```bash
-# View recent log entries
-tail -50 Sync/sync_jira.log
+# Daily sync log
+tail -50 Sync/daily.log
 
-# Follow logs in real-time
-tail -f Sync/sync_jira.log
+# Morning journal log
+tail -50 Scripts/morning.log
+
+# Memory update log
+tail -50 Scripts/memory-update.log
+
+# RSS fetch log
+tail -50 Synced-Data/News/fetch_rss.log
 
 # View scheduled jobs
 crontab -l

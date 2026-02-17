@@ -1,6 +1,6 @@
 # AI-Context Sync Scripts
 
-Sync Jira issue hierarchies and GitHub activity into the AI-Context system for analysis.
+Sync Jira issue hierarchies, GitHub activity, and Slack channels into the AI-Context system for analysis.
 
 ## Setup
 
@@ -97,6 +97,68 @@ python sync_github.py --debug
 
 The script reads team membership from `Curated-Context/Teams/{name}.md` stubs, resolves GitHub handles from `Curated-Context/People/{name}.md` front-matter, and fetches merged PRs via the GitHub Search API. Jira ticket keys are extracted from PR titles (regex: `[A-Z][A-Z0-9]+-\d+`).
 
+### Slack Sync
+
+```bash
+# Activate venv first
+source .venv/bin/activate
+
+# Sync all configured channels
+python sync_slack.py
+
+# Sync a single channel
+python sync_slack.py --channel general
+
+# Override lookback period
+python sync_slack.py --lookback 14
+
+# Full sync (ignore last_synced timestamps)
+python sync_slack.py --full
+
+# Debug mode (show API responses)
+python sync_slack.py --debug
+```
+
+The script uses Slack's internal web APIs with your session token (the same approach used by the [slacksnap](https://curlewis.co.nz/2025/08/05/i-built-another-thing-extract-slack/) browser extension). It supports incremental sync, thread replies, user/channel name resolution, and rate limiting.
+
+**Session token extraction** (required for authentication):
+
+1. Open Slack in your browser and press F12 (DevTools)
+2. **Token** — Go to Console and run:
+   ```javascript
+   JSON.parse(localStorage.getItem('localConfig_v2')).teams[
+       Object.keys(JSON.parse(localStorage.getItem('localConfig_v2')).teams)[0]
+   ].token
+   ```
+3. **Cookie** — Go to Console and run:
+   ```javascript
+   document.cookie.split('; ').find(c => c.startsWith('d=')).slice(2)
+   ```
+   Or: DevTools > Application > Cookies > `https://app.slack.com` > find the `d` cookie
+
+4. Add both to `Sync/.env`:
+   ```
+   SLACK_SESSION_TOKEN=xoxc-your-token-here
+   SLACK_COOKIE_D=your-d-cookie-value-here
+   SLACK_WORKSPACE_URL=https://your-workspace.slack.com
+   ```
+
+**Channel configuration** in `config.json`:
+```json
+{
+  "slack": {
+    "channels": [
+      {"name": "general", "id": "C01234567", "enabled": true},
+      {"name": "DM: Alice", "id": "D01234567", "type": "dm", "enabled": true}
+    ],
+    "lookback_days": 7,
+    "include_threads": true
+  }
+}
+```
+
+Get channel IDs from the Slack URL (e.g., `https://app.slack.com/client/T.../C01234567`) or by right-clicking a channel > "Copy link".
+
 ## Jira Filtering
 
 The `filter_prefix` option allows you to selectively sync only certain child issues from a parent goal. This is useful when:
@@ -134,12 +196,16 @@ Synced-Data/
 │   ├── INDEX.md               # Human-readable navigation
 │   └── issues/
 │       └── {KEY}.json         # Individual issue files
-└── GitHub/
-    ├── _meta.json             # Sync metadata (teams, member counts, timestamps)
-    ├── index.json             # Compact queryable index (all PRs)
-    ├── INDEX.md               # Human-readable summary grouped by team/author
-    └── pull-requests/
-        └── {repo}_{number}.json  # Individual PR detail files
+├── GitHub/
+│   ├── _meta.json             # Sync metadata (teams, member counts, timestamps)
+│   ├── index.json             # Compact queryable index (all PRs)
+│   ├── INDEX.md               # Human-readable summary grouped by team/author
+│   └── pull-requests/
+│       └── {repo}_{number}.json  # Individual PR detail files
+└── Slack/
+    ├── _meta.json             # Sync metadata (workspace, timestamps)
+    └── {channel-name}/
+        └── messages.json      # All messages with threads, reactions, usernames
 ```
 
 ## Issue Schema (Jira)
@@ -182,16 +248,28 @@ Synced-Data/
 
 ## Automation
 
-The `run_sync.sh` wrapper runs both Jira and GitHub syncs with logging:
+The `run_daily.sh` script orchestrates all syncs (Jira, GitHub, Slack, Calendar) with logging and independent failure handling:
 
 ```bash
 # Run manually
-./run_sync.sh
+./run_daily.sh
 
-# Or add to crontab for weekly syncs (Mondays at 8am)
-crontab -e
-0 8 * * 1 /path/to/your/ai-context-system/Sync/run_sync.sh
+# Or install the full automation schedule
+crontab Scripts/crontab.txt
 ```
+
+The full automation pipeline runs on weekday cron schedules:
+
+| Schedule | Script | Purpose |
+|----------|--------|---------|
+| Weekdays 7:00am | `Sync/run_daily.sh` | Data ingress: Jira, GitHub, Slack, Calendar |
+| Weekdays 7:30am | `Scripts/run_morning.sh` | Morning journal via Claude CLI |
+| Monday 7:15am | `Scripts/News/run_fetch_news.sh` | RSS news fetch |
+| Weekdays 11:00pm | `Scripts/run_memory_update.sh` | Full memory update cycle via Claude CLI |
+
+See `Scripts/crontab.txt` for the installable crontab.
+
+The legacy `run_sync.sh` is still available for running just Jira + GitHub syncs.
 
 ## Troubleshooting
 
@@ -213,3 +291,19 @@ crontab -e
 
 **GitHub sync: member skipped (no GitHub handle)**
 - Add a `github` field to the person's YAML front-matter in `Curated-Context/People/{Name}.md`
+
+**Slack sync: "Missing SLACK_SESSION_TOKEN"**
+- Add `SLACK_SESSION_TOKEN` and `SLACK_COOKIE_D` to `Sync/.env`
+- Both are required — the xoxc- token won't work without the `d` cookie
+
+**Slack sync: "Slack token expired or invalid"**
+- Session tokens expire periodically (typically every few weeks)
+- Re-extract from browser DevTools using the instructions above
+
+**Slack sync: "No Slack channels configured"**
+- Add channels to `Sync/config.json` under `slack.channels`
+- Each channel needs at minimum `name` and `id` fields
+
+**Slack sync: rate limiting**
+- The script has built-in rate limiting and retry logic
+- If you still hit limits, reduce the number of channels or increase lookback intervals

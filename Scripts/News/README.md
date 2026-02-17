@@ -27,10 +27,12 @@ python3 -m venv .venv
 
 ### Automated Schedule
 
-The script can be run automatically via cron. For example, to fetch every Monday at 8:15 AM:
+The script can be run automatically via cron. For example, to fetch every Monday at 7:15 AM:
 ```
-15 8 * * 1 /path/to/your/ai-context-system/Scripts/News/run_fetch_news.sh
+15 7 * * 1 /path/to/your/ai-context-system/Scripts/News/run_fetch_news.sh
 ```
+
+See `Scripts/crontab.txt` for the full automation schedule.
 
 ## Output
 

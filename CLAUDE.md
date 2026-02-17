@@ -76,11 +76,18 @@ You are **not** a generic chatbot. You are a highly contextual assistant that kn
 ├── Synced-Data/                   # External data pulled in by scripts
 │   ├── Calendar/                  # Calendar events (from sync script)
 │   ├── Jira/                      # Jira tickets and status
+│   ├── Slack/                     # Slack channel messages
 │   └── News/                      # RSS feed data
 │
 ├── Prompts/                       # Saved prompt templates
-├── Scripts/                       # Utility scripts (calendar, RSS)
-├── Sync/                          # Data sync tools (Jira, etc.)
+├── Scripts/                       # Utility scripts
+│   ├── run_morning.sh             # Cron: automated /morning via Claude CLI
+│   ├── run_memory_update.sh       # Cron: nightly memory update via Claude CLI
+│   ├── crontab.txt                # Reference crontab with all scheduled jobs
+│   └── News/                      # RSS feed aggregation
+├── Sync/                          # Data sync tools (Jira, GitHub, Slack)
+│   ├── sync_slack.py              # Slack channel sync via session token
+│   └── run_daily.sh               # Cron: daily data ingress orchestration
 ├── Guidelines/                    # Processing guidelines
 ├── Archive/                       # Archived older content
 │   ├── Curated-Context/

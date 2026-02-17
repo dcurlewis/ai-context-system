@@ -2,6 +2,22 @@
 
 Start the day with a comprehensive briefing — calendar, priorities, context, and anything that needs attention.
 
+## Automation Status (Optional)
+
+If automation scripts are configured (see `Scripts/crontab.txt`), check the logs before generating the briefing:
+
+1. **Data sync log** (`Sync/daily.log`): Look for today's `DAILY SYNC COMPLETE:` summary line
+2. **Memory update log** (`Scripts/memory-update.log`): Check if last night's update completed, was skipped, or failed
+3. **RSS news log** (Monday only, `Synced-Data/News/fetch_rss.log`): Check article count
+
+Include a `### Automation Status` section at the top of the journal if logs exist:
+
+    ### Automation Status
+    - **Data sync** (7:00am): Jira OK, GitHub OK, Slack OK, Calendar OK
+    - **Memory update** (last night): Completed / Skipped / Failed
+
+If no automation logs exist, skip this section.
+
 ## Instructions
 
 1. Read `config.yaml` for user identity, timezone, team, and role
@@ -90,7 +106,8 @@ Based on relationship dynamics and recent context:
 ### Monday
 - Include a "week ahead" section with key events and deadlines for the week
 - Note any delivery reports or status updates due this week
-- Suggest running `/memory-scan` to catch up after the weekend
+- Suggest running `/memory-scan` to catch up after the weekend (if not automated)
+- If RSS news was fetched (check `Synced-Data/News/fetch_rss.log`), suggest running `/news` to generate the digest
 
 ### Friday
 - Include a "week in review" prompt

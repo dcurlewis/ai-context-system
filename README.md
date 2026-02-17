@@ -49,40 +49,66 @@ cd ai-context-system
 
 That's it. The system builds your personal knowledge graph from there.
 
+### Optional: Set Up Automation
+
+For hands-free daily operation, configure the data sync and cron pipeline:
+
+1. Set up sync credentials: `cp Sync/.env.example Sync/.env` and add your Jira API token, Slack session token + cookie, and workspace URL
+2. Configure channels and teams: `cp Sync/config.example.json Sync/config.json`
+3. Install the cron schedule: edit paths in `Scripts/crontab.txt`, then `crontab Scripts/crontab.txt`
+
+See `Sync/SETUP_GUIDE.md` for detailed instructions including Slack token extraction.
+
 ---
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    config.yaml                          │
-│         (your identity, team, preferences)              │
-└──────────────────────┬──────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────┐
-│                    CLAUDE.md                             │
-│          (system instructions & pipeline)                │
-└──────────────────────┬──────────────────────────────────┘
-                       │
-          ┌────────────┼────────────┐
-          ▼            ▼            ▼
-   ┌─────────┐  ┌───────────┐  ┌────────┐
-   │   Raw   │  │  Curated  │  │ Memory │
-   │Materials│→ │  Context  │→ │ Files  │
-   └─────────┘  └───────────┘  └────────┘
-   Transcripts   Structured     Long-term
-   Docs, Slack   insights       brain
+The system operates as an automated daily pipeline with manual processing commands for ad-hoc content:
 
-          ┌────────────┼────────────┐
-          ▼            ▼            ▼
-   ┌─────────┐  ┌───────────┐  ┌────────┐
-   │  Slash  │  │ Obsidian  │  │ Synced │
-   │Commands │  │  Vault    │  │  Data  │
-   └─────────┘  └───────────┘  └────────┘
-   24 commands   Visual graph   Jira, GitHub,
-   for all ops   of knowledge   Calendar, RSS
+```mermaid
+flowchart TD
+    subgraph morning_cron [Weekday Cron 7:00am]
+        daily[run_daily.sh]
+        daily --> jira[sync_jira.py]
+        daily --> github[sync_github.py]
+        daily --> slack[sync_slack.py]
+        daily --> calendar[calendar-today.py]
+    end
+
+    subgraph morning_gen [Weekday Cron 7:30am]
+        morningScript[run_morning.sh]
+        morningScript --> claudeMorning["claude -p /morning"]
+    end
+
+    subgraph weekly [Monday Cron 7:15am]
+        news[run_fetch_news.sh]
+    end
+
+    subgraph nightly [Weekday Cron 11:00pm]
+        memoryScript[run_memory_update.sh]
+        memoryScript --> scanPhase["/memory-scan"]
+        scanPhase --> parallelUpdates["6x parallel topic updates"]
+        parallelUpdates --> finalPhases["consolidate, validate, promote"]
+        finalPhases --> prune[Prune old archives]
+        prune --> gitBackup["/backup"]
+    end
+
+    jira --> syncedData[Synced-Data/]
+    github --> syncedData
+    slack --> syncedData
+    calendar --> syncedData
+    news --> syncedData
+
+    syncedData --> claudeMorning
+    daily -.->|logs| claudeMorning
+    memoryScript -.->|logs| claudeMorning
 ```
+
+1. **Data ingress** (automated daily): Jira issues, GitHub PRs, Slack channels, and calendar events are synced into `Synced-Data/` every weekday morning
+2. **Morning journal** (automated daily): Claude CLI generates an enriched daily journal with agenda, context, and automation status reporting
+3. **Content processing** (manual): Slash commands (`/meeting`, `/doc`, `/slack`) process raw materials from `Raw-Materials/` into structured markdown in `Curated-Context/`
+4. **Memory updates** (automated nightly): The full 5-phase memory update cycle runs each weeknight, aggregating curated context into six thematic memory files
+5. **News digest** (automated weekly): RSS feeds are fetched on Monday mornings; Claude generates a curated digest
 
 ### The Memory Pipeline
 
@@ -205,11 +231,19 @@ The entire project directory works as an [Obsidian](https://obsidian.md) vault. 
 │   ├── Team-Knowledge/
 │   └── ... (14 categories)
 ├── Memory/                     # Long-term system memory
-├── Synced-Data/                # Jira, GitHub, Calendar, RSS data
+├── Synced-Data/                # Jira, GitHub, Slack, Calendar, RSS data
 ├── .claude/commands/           # 24 slash commands
 ├── Guidelines/                 # Processing guidelines
 ├── Scripts/                    # Utility scripts
-├── Sync/                       # Data sync tools (Jira, GitHub)
+│   ├── run_morning.sh          # Cron: automated /morning via Claude CLI
+│   ├── run_memory_update.sh    # Cron: nightly memory update via Claude CLI
+│   ├── crontab.txt             # Reference crontab with all scheduled jobs
+│   └── News/                   # RSS feed aggregation
+├── Sync/                       # Data sync tools (Jira, GitHub, Slack)
+│   ├── sync_jira.py            # Jira hierarchy sync
+│   ├── sync_github.py          # GitHub PR activity sync
+│   ├── sync_slack.py           # Slack channel sync via session token
+│   └── run_daily.sh            # Cron: daily data ingress orchestration
 └── Archive/                    # Archived content
 ```
 
@@ -231,7 +265,7 @@ Key sections:
 
 ---
 
-## Data Sync (Jira & GitHub)
+## Data Sync (Jira, GitHub & Slack)
 
 The `Sync/` directory contains scripts that pull external data into `Synced-Data/` for analysis by the `/delivery` command and other workflows.
 
@@ -241,6 +275,7 @@ The `Sync/` directory contains scripts that pull external data into `Synced-Data
 |------|-------------|---------------|
 | **Jira** | Fetches issue hierarchies under configurable root issues | Jira API token |
 | **GitHub** | Fetches merged PRs authored by your team members | GitHub Personal Access Token |
+| **Slack** | Fetches channel messages with threads and user resolution | Slack session token + `d` cookie |
 
 ### Setup
 
@@ -250,8 +285,8 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install requests python-dotenv pyyaml
 
-cp .env.example .env          # Add your API tokens
-cp config.example.json config.json  # Configure your org, teams, and root issues
+cp .env.example .env          # Add your API tokens and Slack credentials
+cp config.example.json config.json  # Configure your org, teams, channels, and root issues
 ```
 
 ### GitHub Sync Configuration
@@ -261,6 +296,27 @@ The GitHub sync reads team membership from `Curated-Context/Teams/` stubs and re
 1. Set `github.org` and `github.teams` in `Sync/config.json`
 2. Add a `GITHUB_TOKEN` to `Sync/.env` (PAT with `repo` scope)
 3. Add a `github: username` field to each team member's People stub YAML front-matter
+
+### Slack Sync Configuration
+
+The Slack sync uses your session token to fetch messages from configured channels. To set it up:
+
+1. Extract your session token and `d` cookie from the browser (see `Sync/SETUP_GUIDE.md`)
+2. Add `SLACK_SESSION_TOKEN`, `SLACK_COOKIE_D`, and `SLACK_WORKSPACE_URL` to `Sync/.env`
+3. Configure channels in `Sync/config.json` under `slack.channels`
+
+### Automation
+
+All syncs are orchestrated by `Sync/run_daily.sh`, which runs each weekday morning via cron:
+
+| Schedule | Script | Purpose |
+|----------|--------|---------|
+| Weekdays 7:00am | `Sync/run_daily.sh` | Data ingress: Jira, GitHub, Slack, Calendar |
+| Weekdays 7:30am | `Scripts/run_morning.sh` | Morning journal via Claude CLI |
+| Monday 7:15am | `Scripts/News/run_fetch_news.sh` | RSS news fetch |
+| Weekdays 11:00pm | `Scripts/run_memory_update.sh` | Full memory update cycle via Claude CLI |
+
+Install with `crontab Scripts/crontab.txt` (edit paths first).
 
 See `Sync/README.md` for full details, CLI options, and troubleshooting.
 

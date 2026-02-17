@@ -19,5 +19,15 @@
     "description": "Death Star Operations team GitHub activity",
     "last_synced": null,
     "total_prs": 0
+  },
+  "slack": {
+    "channels": [
+      {"name": "death-star-ops", "id": "C0EXAMPLE01", "tier": 1, "type": "channel", "enabled": true},
+      {"name": "imperial-fleet-general", "id": "C0EXAMPLE02", "tier": 2, "type": "channel", "enabled": true},
+      {"name": "DM: Grand Moff Tarkin", "id": "D0EXAMPLE01", "tier": 1, "type": "dm", "enabled": true}
+    ],
+    "lookback_days": 7,
+    "include_threads": true,
+    "description": "Slack channel sync via session token. Add channels with {name, id, enabled}."
   }
 }

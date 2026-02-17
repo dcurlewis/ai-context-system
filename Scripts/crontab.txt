@@ -1,0 +1,20 @@
+# AI-Context-System Automation Schedule
+# Install with: crontab Scripts/crontab.txt
+# Or merge into existing crontab with: crontab -e
+#
+# NOTE: Crontab requires absolute paths. Update the paths below to match
+# your local clone location before installing.
+#
+# All times are local machine time
+
+# Weekday data ingress: Jira, GitHub, Slack, Calendar (7:00am)
+0 7 * * 1-5 /path/to/ai-context-system/Sync/run_daily.sh
+
+# Weekday morning journal generation (7:30am, after data sync)
+30 7 * * 1-5 /path/to/ai-context-system/Scripts/run_morning.sh
+
+# Monday RSS news fetch (7:15am)
+15 7 * * 1 /path/to/ai-context-system/Scripts/News/run_fetch_news.sh
+
+# Weekday nightly memory update + git backup (11:00pm)
+0 23 * * 1-5 /path/to/ai-context-system/Scripts/run_memory_update.sh
