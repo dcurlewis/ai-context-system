@@ -80,8 +80,8 @@ That's it. The system builds your personal knowledge graph from there.
    │  Slash  │  │ Obsidian  │  │ Synced │
    │Commands │  │  Vault    │  │  Data  │
    └─────────┘  └───────────┘  └────────┘
-   24 commands   Visual graph   Calendar,
-   for all ops   of knowledge   Jira, RSS
+   24 commands   Visual graph   Jira, GitHub,
+   for all ops   of knowledge   Calendar, RSS
 ```
 
 ### The Memory Pipeline
@@ -205,11 +205,11 @@ The entire project directory works as an [Obsidian](https://obsidian.md) vault. 
 │   ├── Team-Knowledge/
 │   └── ... (14 categories)
 ├── Memory/                     # Long-term system memory
-├── Synced-Data/                # Calendar, Jira, RSS data
+├── Synced-Data/                # Jira, GitHub, Calendar, RSS data
 ├── .claude/commands/           # 24 slash commands
 ├── Guidelines/                 # Processing guidelines
 ├── Scripts/                    # Utility scripts
-├── Sync/                       # Data sync tools
+├── Sync/                       # Data sync tools (Jira, GitHub)
 └── Archive/                    # Archived content
 ```
 
@@ -228,6 +228,41 @@ Key sections:
 - **stakeholders** — Key people outside your direct team
 - **communication_style** — Spelling, formality, tone preferences
 - **obsidian** — Vault settings
+
+---
+
+## Data Sync (Jira & GitHub)
+
+The `Sync/` directory contains scripts that pull external data into `Synced-Data/` for analysis by the `/delivery` command and other workflows.
+
+### Available Syncs
+
+| Sync | What It Does | Auth Required |
+|------|-------------|---------------|
+| **Jira** | Fetches issue hierarchies under configurable root issues | Jira API token |
+| **GitHub** | Fetches merged PRs authored by your team members | GitHub Personal Access Token |
+
+### Setup
+
+```bash
+cd Sync
+python3 -m venv .venv
+source .venv/bin/activate
+pip install requests python-dotenv pyyaml
+
+cp .env.example .env          # Add your API tokens
+cp config.example.json config.json  # Configure your org, teams, and root issues
+```
+
+### GitHub Sync Configuration
+
+The GitHub sync reads team membership from `Curated-Context/Teams/` stubs and resolves GitHub handles from `Curated-Context/People/` front-matter. To use it:
+
+1. Set `github.org` and `github.teams` in `Sync/config.json`
+2. Add a `GITHUB_TOKEN` to `Sync/.env` (PAT with `repo` scope)
+3. Add a `github: username` field to each team member's People stub YAML front-matter
+
+See `Sync/README.md` for full details, CLI options, and troubleshooting.
 
 ---
 

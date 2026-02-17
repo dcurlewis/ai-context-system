@@ -4,6 +4,7 @@ aliases:
 role: Station Commander / CEO
 team: Death Star Operations
 email: tarkin@deathstar.empire.gov
+github: tarkin
 slack: "@Grand Moff Tarkin"
 manager: "[[Emperor Palpatine]]"
 last_updated: 2026-01-10

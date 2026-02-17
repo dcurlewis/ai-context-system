@@ -4,6 +4,7 @@ aliases:
 role: Director of Construction
 team: Death Star Operations
 email: jerjerrod@deathstar.empire.gov
+github: jerjerrod
 slack: "@Moff Jerjerrod"
 manager: "[[Darth Vader]]"
 last_updated: 2026-01-10

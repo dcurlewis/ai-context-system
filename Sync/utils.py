@@ -26,6 +26,8 @@ CONFIG_FILE = SYNC_DIR / "config.json"
 DATA_DIR = SYNC_DIR.parent / "Synced-Data"
 SLACK_DIR = DATA_DIR / "Slack"
 JIRA_DIR = DATA_DIR / "Jira"
+GITHUB_DIR = DATA_DIR / "GitHub"
+CURATED_DIR = SYNC_DIR.parent / "Curated-Context"
 
 
 def iso_now() -> str:

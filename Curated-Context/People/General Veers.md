@@ -4,6 +4,7 @@ aliases:
 role: Director of Ground Operations
 team: Death Star Operations
 email: veers@deathstar.empire.gov
+github: veers
 slack: "@General Veers"
 manager: "[[Darth Vader]]"
 last_updated: 2026-01-10

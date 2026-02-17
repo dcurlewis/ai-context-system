@@ -4,6 +4,7 @@ aliases:
 role: VP Naval Operations
 team: Death Star Operations
 email: piett@deathstar.empire.gov
+github: admiral-piett
 slack: "@Admiral Piett"
 manager: "[[Darth Vader]]"
 last_updated: 2026-01-10

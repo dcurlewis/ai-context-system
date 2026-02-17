@@ -8,5 +8,16 @@
     "description": "Death Star Operations team goals only",
     "last_synced": "",
     "total_issues": 0
+  },
+  "github": {
+    "org": "galactic-empire",
+    "teams": [
+      "Death Star Engineering",
+      "Imperial Naval Operations"
+    ],
+    "lookback_days": 14,
+    "description": "Death Star Operations team GitHub activity",
+    "last_synced": null,
+    "total_prs": 0
   }
 }
